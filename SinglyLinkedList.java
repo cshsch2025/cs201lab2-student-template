@@ -101,8 +101,40 @@ public class SinglyLinkedList<E extends Comparable<E>> {
 
     // write your codes here
     public void swap(){
-        
+        if (head == null || head == tail) {
+            return;
+        }
 
+        // 1) We want to containerize each node, such that we have a pointer pointed to
+        // each element in the linked list
+        List<Node<E>> arr = new ArrayList<>();
+        Node<E> temp = head;
+        while (temp != null) {
+            arr.add(temp);
+            temp = temp.getNext();
+        }
+        int len = arr.size();
+
+        // 2) Sort the list based on the value in ascending order
+        Comparator<Node<E>> sortByValue = (a, b) -> ((Comparable<E>) a.getElement()).compareTo(b.getElement());
+
+        List<Node<E>> sortedArr = new ArrayList<>(arr);
+        sortedArr.sort(sortByValue);
+
+        // 3) Place the nodes in the correct order
+        List<Node<E>> res = new ArrayList<>();
+        for (Node<E> node : arr) {
+            int i = Collections.binarySearch(sortedArr, node, sortByValue);
+            res.add(sortedArr.get(len - i - 1));
+        }
+
+        // 4) Wire the nodes together
+        for (int i = 0; i < len - 1; i++) {
+            res.get(i).setNext(res.get(i + 1));
+        }
+        head = res.get(0);
+        tail = res.get(len - 1);
+        res.get(len - 1).setNext(null);
     }
    
 }
